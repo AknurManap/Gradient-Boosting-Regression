@@ -1,38 +1,27 @@
-from google.colab import files
-files.upload()
+import sys
+import matplotlib
+matplotlib.use('Agg')
+
+import pandas as pd
 import matplotlib.pyplot as plt
-df = pd.read_csv('dataset.csv')
-plt.figure(figsize=(10, 6))
-plt.hist(df['diameter'].dropna(), bins=30, edgecolor='k')
-plt.xlabel('Диаметр')
-plt.ylabel('Частота')
-plt.title('Распределение диаметров')
-plt.figure(figsize=(10, 6))
-plt.scatter(df['H'], df['diameter'], alpha=0.5)
-plt.xlabel('Абсолютная величина (H)')
-plt.ylabel('Диаметр')
-plt.title('Зависимость диаметра от абсолютной величины')
-class_counts = df['class'].value_counts()
-plt.figure(figsize=(10, 6))
-plt.bar(class_counts.index, class_counts.values)
-plt.xlabel('Класс')
-plt.ylabel('Частота')
-plt.title('Классификация данных')
-import seaborn as sns
-correlation_matrix = df[['H', 'diameter']].corr()
-plt.figure(figsize=(8, 6))
-sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm')
-plt.title('Корреляционная матрица')
-plt.show()
-mean_diameter_by_class = df.groupby('class')['diameter'].mean()
-plt.figure(figsize=(10, 6))
-plt.bar(mean_diameter_by_class.index, mean_diameter_by_class.values)
-plt.xlabel('Класс')
-plt.ylabel('Средний диаметр')
-plt.title('Сравнение средних диаметров по классам')
-plt.show()
-neo_counts = df['neo'].value_counts()
-plt.figure(figsize=(8, 8))
-plt.pie(neo_counts, labels=neo_counts.index, autopct='%1.1f%%', startangle=140, colors=['#ff9999','#66b3ff'])
-plt.title('Доля Near Earth Objects (NEO)')
-plt.show()
+from scipy import stats
+
+new_sales_data = pd.read_csv("data.csv", header=0, oct=",")
+
+x = new_sales_data["Price"]
+y = new_sales_data["Revenue"]
+
+slope, intercept, r, p, std_err = stats.linregress(x, y)
+
+def myfunc(x):
+    return slope * x + intercept
+
+mymodel = list(map(myfunc, x))
+
+plt.scatter(x, y)
+plt.plot(x, mymodel)
+plt.xlabel("Price")
+plt.ylabel("Revenue")
+
+plt.savefig(sys.stdout.buffer)
+sys.stdout.flush()
